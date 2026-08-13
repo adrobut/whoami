@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<!-- saved from url=(0228)file:///Users/alexandradrobut/Library/Application%20Support/Claude/local-agent-mode-sessions/5306de5b-a712-4fe3-a428-3f41d8f69ef3/2bad1522-eb49-4006-94c7-1785697376f5/local_672a6ff3-c18d-407a-89d8-701d71044192/outputs/index.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>alexandra@drobut:~$</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./whoami_files/css2" rel="stylesheet">
+<style>
+  /* ---- Amber CRT palette ---- */
+  :root {
+    --bg: #0b0700;
+    --bg-window: #120d05;
+    --fg: #ffcf7a;
+    --fg-dim: #8a6a35;
+    --accent: #ffb000;
+    --accent2: #ffdb99;
+    --amber: #ffb000;
+    --pink: #ff8c3d;
+    --border: #3a2610;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .wrap {
+    max-width: 900px;
+    margin: 40px auto 80px;
+    padding: 0 16px;
+  }
+  .window {
+    position: relative;
+    background: var(--bg-window);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55), inset 0 0 60px rgba(255,176,0,0.03);
+    animation: flicker 6s infinite;
+  }
+  @keyframes flicker {
+    0%, 96%, 100% { filter: brightness(1); }
+    97% { filter: brightness(1.04); }
+    98% { filter: brightness(0.97); }
+    99% { filter: brightness(1.02); }
+  }
+  /* scanline overlay */
+  .window::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,176,0,0.05) 0px,
+      rgba(255,176,0,0.05) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    z-index: 5;
+    mix-blend-mode: overlay;
+  }
+  /* moving scan glow */
+  .window::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to bottom, transparent, rgba(255,176,0,0.05), transparent);
+    animation: scan 7s linear infinite;
+    pointer-events: none;
+    z-index: 5;
+  }
+  @keyframes scan {
+    0% { top: -120px; }
+    100% { top: 100%; }
+  }
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #17110a;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 6;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display:inline-block; }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+  .titlebar span.label {
+    margin-left: 10px;
+    color: var(--fg-dim);
+    font-size: 12px;
+  }
+  .term {
+    padding: 24px 26px 40px;
+    position: relative;
+    z-index: 6;
+  }
+  #boot {
+    color: var(--fg-dim);
+    font-size: 12.5px;
+    margin-bottom: 14px;
+    min-height: 90px;
+  }
+  #boot div { margin: 2px 0; }
+  #boot .ok { color: var(--accent); }
+
+  pre.ascii {
+    color: var(--accent);
+    font-size: 11px;
+    line-height: 1.25;
+    margin: 0 0 4px;
+    overflow-x: auto;
+    text-shadow: 0 0 12px rgba(255,176,0,0.45);
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  pre.ascii.show { opacity: 1; }
+
+  .subtitle {
+    color: var(--fg-dim);
+    margin-bottom: 22px;
+    min-height: 1.55em;
+  }
+  .subtitle .role { color: var(--accent2); }
+  .prompt {
+    color: var(--fg-dim);
+    margin: 0;
+    min-height: 1.55em;
+  }
+  .prompt .user { color: var(--accent); }
+  .prompt .path { color: var(--accent2); }
+  .prompt .cmd { color: var(--fg); }
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background: var(--accent);
+    margin-left: 4px;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+    box-shadow: 0 0 8px rgba(255,176,0,0.7);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* scroll-reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  section { margin: 30px 0 8px; }
+  h2 {
+    font-size: 15px;
+    margin: 0 0 12px;
+    color: var(--accent);
+  }
+  h2::before { content: "## "; color: var(--fg-dim); }
+  h2::after {
+    content: "";
+    display: block;
+    border-bottom: 1px dashed var(--border);
+    margin-top: 8px;
+  }
+  .kv { margin: 2px 0; }
+  .kv .k { color: var(--fg-dim); }
+  .kv .v { color: var(--fg); }
+  a { color: var(--accent2); text-decoration: none; border-bottom: 1px dotted var(--accent2); }
+  a:hover { color: var(--amber); border-color: var(--amber); text-shadow: 0 0 8px rgba(255,176,0,0.6); }
+
+  ul.list { list-style: none; margin: 0; padding: 0; }
+  ul.list li {
+    padding-left: 22px;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  ul.list li::before {
+    content: "$";
+    position: absolute;
+    left: 0;
+    color: var(--fg-dim);
+  }
+
+  .job { margin-bottom: 26px; }
+  .job-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px 16px;
+  }
+  .job-title { color: var(--accent2); font-weight: 700; }
+  .job-dates { color: var(--fg-dim); font-size: 13px; }
+  .job-org { color: var(--pink); margin: 2px 0 10px; font-size: 13.5px; }
+
+  .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .tag {
+    border: 1px solid var(--border);
+    color: var(--amber);
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .tag:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(255,176,0,0.15); }
+
+  .skills-grid { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .skills-grid .kv .k { display: inline-block; min-width: 190px; }
+
+  footer {
+    text-align: center;
+    color: var(--fg-dim);
+    font-size: 12px;
+    margin-top: 30px;
+  }
+
+  .btns { margin-top: 26px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover { background: var(--accent); color: #1a0e00; box-shadow: 0 0 16px rgba(255,176,0,0.5); }
+
+  @media (max-width: 640px) {
+    pre.ascii { font-size: 7px; }
+    body { font-size: 13.5px; }
+    .skills-grid .kv .k { display: block; min-width: unset; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .window, .window::after, .cursor { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    pre.ascii { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="window">
+    <div class="titlebar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="label">alexandra@drobut: ~/cv</span>
+    </div>
+    <div class="term">
+      <div id="boot"><div>&gt; booting alexandra@drobut...</div><div class="ok">&gt; mounting /dev/experience ... OK</div><div class="ok">&gt; loading skills.yaml ... OK</div><div class="ok">&gt; decrypting career_history.enc ... OK</div><div class="ok">&gt; starting cv_daemon ... ready</div></div>
+
+      <pre class="ascii show" id="ascii">   _   _                      _            ___          _         _
+  /_\ | |_____ ____ _ _ _  __| |_ _ __ _  |   \ _ _ ___| |__ _  _| |_
+ / _ \| / -_) \ / _` | ' \/ _` | '_/ _` | | |) | '_/ _ \ '_ \ || |  _|
+/_/ \_\_\___/_\_\__,_|_||_\__,_|_| \__,_| |___/|_| \___/_.__/\_,_|\__|</pre>
+      <p class="subtitle"><span class="role" id="roleText">Senior Software Engineer</span><span id="subtitleRest"> — Backend, Systems, Security &amp; Applied AI</span></p>
+
+      <p class="prompt"><span class="user">alexandra@drobut</span>:<span class="path">~</span>$ <span class="cmd" id="whoamiCmd">whoami</span><span class="cursor" id="whoamiCursor" style="display: inline-block;"></span></p>
+
+      <section class="reveal visible" id="summary">
+        <div class="kv"><span class="v">Senior Backend Software Engineer with 10+ years of experience across cybersecurity, networking, and automotive domains. Delivered core features across embedded systems at Riverbed and cloud-native security products at Snyk. Adaptable across stacks — high-throughput data pipelines, vulnerability detection engines, network monitoring tools. PhD candidate research background in deep learning, recently focused on applying LLMs to security tooling and developer workflows.</span></div>
+      </section>
+
+      <section class="reveal visible" id="contact">
+        <h2>contact --show</h2>
+        <div class="kv"><span class="k">location</span>  <span class="v">Cluj-Napoca, Romania</span></div>
+        <div class="kv"><span class="k">email</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="v"><a href="mailto:drobuta@gmail.com">drobuta@gmail.com</a></span></div>
+        <div class="kv"><span class="k">linkedin</span>&nbsp;&nbsp;<span class="v"><a href="https://linkedin.com/in/alexandra-drobut" target="_blank" rel="noopener">linkedin.com/in/alexandra-drobut</a></span></div>
+        <div class="kv"><span class="k">github</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="v"><a href="https://github.com/adrobut" target="_blank" rel="noopener">github.com/adrobut</a></span></div>
+      </section>
+
+      <section class="reveal visible" id="skills">
+        <h2>cat skills.yaml</h2>
+        <div class="skills-grid">
+          <div class="kv"><span class="k">languages:</span> <span class="v">C, C++ (11/17), Go, Python, TypeScript, Bash</span></div>
+          <div class="kv"><span class="k">infra:</span> <span class="v">Linux, Docker, Kubernetes, Helm, Argo, CircleCI, Git, GCP, AWS</span></div>
+          <div class="kv"><span class="k">observability:</span> <span class="v">Prometheus, Grafana, Datadog, on-call/incident response</span></div>
+          <div class="kv"><span class="k">databases:</span> <span class="v">PostgreSQL, Redis, ClickHouse, SQL, MariaDB</span></div>
+          <div class="kv"><span class="k">domains:</span> <span class="v">Networking, cybersecurity, SD-WAN, OpenWrt/LEDE, automotive</span></div>
+          <div class="kv"><span class="k">ai tooling:</span> <span class="v">Cursor, Claude, LangChain, LiteLLM, HuggingFace</span></div>
+        </div>
+      </section>
+
+      <section class="reveal" id="experience">
+        <h2>git log --oneline experience/</h2>
+
+        <div class="job">
+          <div class="job-head">
+            <span class="job-title">Senior Software Engineer</span>
+            <span class="job-dates">Jun 2023 — Present</span>
+          </div>
+          <div class="job-org">Snyk · Remote</div>
+          <ul class="list">
+            <li>Designed and implemented vulnerability detection features for Snyk's C/C++ and container security scanners, helping enterprise teams identify and remediate risk in production codebases.</li>
+            <li>Built and maintained distributed backend services in TypeScript, Golang, and C++, integrating with databases and observability tooling across GCP and AWS; owned CI/CD, on-call rotation, and Kubernetes deployment tuning.</li>
+            <li>Resolved high-priority customer escalations by debugging scanner behavior and shipping fixes, reducing ticket resolution time and false-positive rates.</li>
+            <li>Prototyped and benchmarked an AI-powered tool exploring automated security vulnerability remediation, integrating multiple LLM providers.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">TypeScript</span><span class="tag">Go</span><span class="tag">C++</span><span class="tag">GCP</span><span class="tag">AWS</span><span class="tag">K8s</span>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-head">
+            <span class="job-title">Software Engineer</span>
+            <span class="job-dates">Dec 2017 — Jun 2023</span>
+          </div>
+          <div class="job-org">Riverbed Technology Labs · Cluj-Napoca, Romania</div>
+          <ul class="list">
+            <li>Benchmarked database scalability across diverse customer hardware architectures (CPU/SSD/HDD) to size and dimension the product family for network deployments.</li>
+            <li>Optimized C++11 ClickHouse client libraries for the Network Performance Management (NPM) platform, improving write throughput on SSD/HDD devices under high load by more than 20%.</li>
+            <li>Wrote Python tooling for testing, automation, and internal workflows supporting the C/C++ codebase.</li>
+            <li>Built and maintained SD-WAN features across both userspace and kernel-level networking components on an embedded Linux platform.</li>
+            <li>Served as an escalation point for enterprise customer networks, partnering with support engineers on fixes that reduced downtime and repeat escalations.</li>
+          </ul>
+          <div class="tag-row">
+            <span class="tag">C++11</span><span class="tag">ClickHouse</span><span class="tag">Python</span><span class="tag">Embedded Linux</span><span class="tag">SD-WAN</span>
+          </div>
+        </div>
+
+        <div class="job">
+          <div class="job-head">
+            <span class="job-title">C/C++ Engineer</span>
+            <span class="job-dates">Dec 2016 — Dec 2017</span>
+          </div>
+          <div class="job-org">NTT Data Romania · Cluj-Napoca, Romania</div>
+          <ul class="list">
+            <li>Built serialization/deserialization pipelines for data from automotive peripherals and sensors.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="reveal" id="projects">
+        <h2>ls projects/ hackathons/</h2>
+        <ul class="list">
+          <li>Hack for Facts Hackathon — built a fact-checking application for news.</li>
+          <li>Worldwide Labelathon (Kili Technology) — contributed to a global effort labeling ocean plastic images to support waste-collecting robots.</li>
+        </ul>
+      </section>
+
+      <section class="reveal" id="teaching">
+        <h2>cat teaching.log</h2>
+        <div class="job-head">
+          <span class="job-title">Teaching Assistant</span>
+          <span class="job-dates">2019 — 2024</span>
+        </div>
+        <div class="job-org">Technical University of Cluj-Napoca</div>
+        <ul class="list">
+          <li>Mentored ~50 students yearly on AI projects spanning voice processing, image processing, and NLP applications.</li>
+          <li>Taught and managed laboratory sessions on 8086 microprocessor architecture.</li>
+        </ul>
+      </section>
+
+      <section class="reveal" id="education">
+        <h2>cat education.json</h2>
+        <div class="kv"><span class="v">Doctoral Candidate (Ph.D.), Deep Learning for Image Captioning — Technical University of Cluj-Napoca <span class="k">(2020–2023)</span></span></div>
+        <div class="kv"><span class="v">M.Sc. Multimedia Technologies — Technical University of Cluj-Napoca <span class="k">(2018–2020)</span></span></div>
+        <div class="kv"><span class="v">B.Eng. Electrical Engineering — Technical University of Cluj-Napoca <span class="k">(2013–2017)</span></span></div>
+      </section>
+
+      <section class="reveal" id="beyond">
+        <h2>echo $BEYOND_WORK</h2>
+        <div class="kv"><span class="v">MTB / road cyclist and outdoor explorer, passionate about green tech and the circular economy. Once published a book of poetry — currently struggling to find time to write.</span></div>
+      </section>
+
+      <div class="btns reveal">
+        <a class="btn" href="mailto:drobuta@gmail.com">↳ email me</a>
+        <a class="btn" href="https://linkedin.com/in/alexandra-drobut" target="_blank" rel="noopener">↳ linkedin</a>
+        <a class="btn" href="https://github.com/adrobut" target="_blank" rel="noopener">↳ github</a>
+      </div>
+
+      <p class="prompt reveal" style="margin-top:24px;"><span class="user">alexandra@drobut</span>:<span class="path">~</span>$ <span class="cursor"></span></p>
+    </div>
+  </div>
+  <footer>built with ☕ and a terminal aesthetic · last updated <span id="date">August 2026</span></footer>
+</div>
+<script>
+  document.getElementById('date').textContent = new Date().toLocaleDateString('en-GB', { year: 'numeric', month: 'long' });
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function typeInto(el, text, speed) {
+    return new Promise((resolve) => {
+      if (reduceMotion) { el.textContent = text; resolve(); return; }
+      let i = 0;
+      el.textContent = '';
+      const timer = setInterval(() => {
+        el.textContent += text[i];
+        i++;
+        if (i >= text.length) { clearInterval(timer); resolve(); }
+      }, speed);
+    });
+  }
+
+  async function bootSequence() {
+    const bootEl = document.getElementById('boot');
+    const lines = [
+      { text: '> booting alexandra@drobut...', ok: false },
+      { text: '> mounting /dev/experience ... OK', ok: true },
+      { text: '> loading skills.yaml ... OK', ok: true },
+      { text: '> decrypting career_history.enc ... OK', ok: true },
+      { text: '> starting cv_daemon ... ready', ok: true },
+    ];
+
+    if (reduceMotion) {
+      lines.forEach(l => {
+        const d = document.createElement('div');
+        if (l.ok) d.className = 'ok';
+        d.textContent = l.text;
+        bootEl.appendChild(d);
+      });
+    } else {
+      for (const l of lines) {
+        const d = document.createElement('div');
+        if (l.ok) d.className = 'ok';
+        bootEl.appendChild(d);
+        await typeInto(d, l.text, 12);
+        await new Promise(r => setTimeout(r, 120));
+      }
+    }
+
+    await new Promise(r => setTimeout(r, 200));
+    document.getElementById('ascii').classList.add('show');
+    await new Promise(r => setTimeout(r, 500));
+
+    await typeInto(document.getElementById('roleText'), 'Senior Software Engineer', 18);
+    await typeInto(document.getElementById('subtitleRest'), ' — Backend, Systems, Security & Applied AI', 10);
+
+    await new Promise(r => setTimeout(r, 150));
+    const whoamiCursor = document.getElementById('whoamiCursor');
+    whoamiCursor.style.display = 'inline-block';
+    await typeInto(document.getElementById('whoamiCmd'), 'whoami', 90);
+
+    await new Promise(r => setTimeout(r, 250));
+    document.getElementById('summary').classList.add('visible');
+
+    setupScrollReveal();
+  }
+
+  function setupScrollReveal() {
+    const targets = document.querySelectorAll('.reveal:not(#summary)');
+    if (!('IntersectionObserver' in window) || reduceMotion) {
+      targets.forEach(t => t.classList.add('visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    targets.forEach(t => observer.observe(t));
+  }
+
+  bootSequence();
+</script>
+
+
+</body></html>
